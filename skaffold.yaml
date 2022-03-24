@@ -6,7 +6,7 @@ profiles:
       local:
         push: true # false는 로컬 테스트
       artifacts:
-        - image: skaqud/simple-api # on dev server
+        - image: feet312/simple-api # on dev server
         # - image: simple-api   # local
           jib:
             args:
