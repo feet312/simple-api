@@ -1,7 +1,7 @@
 def PROJECT_NAME = "simple-api"
-def gitUrl = "https://github.com/skaqud/${PROJECT_NAME}.git"
+def gitUrl = "https://github.com/feet312/${PROJECT_NAME}.git"
 def imgRegistry = "https://registry.hub.docker.com"
-def gitOpsUrl = "github.com/skaqud/simple-gitops.git"
+def gitOpsUrl = "github.com/feet312/simple-gitops.git"
 def opsBranch = "main"
 /////////////////////////////
 pipeline {
@@ -15,11 +15,11 @@ pipeline {
                 checkout scm: [
                         $class: "GitSCM",
                         userRemoteConfigs: [[url: "${gitUrl}",
-                        credentialsId: "git-credential" ]],     //credential 이름이 jenkins에 등록된 이름과 동일해야 함
+                        credentialsId: "jenkins-ICIS-TR-github-pat" ]],     //credential 이름이 jenkins에 등록된 이름과 동일해야 함
                         branches: [[name: "refs/tags/${TAG}"]]],
                     poll: false
                 script{
-                    docker.withRegistry("${imgRegistry}","imageRegistry-credential"){   //credential 이름이 jenkins에 등록된 이름과 동일해야 함, jenkins에 docker deploy 권한 필요
+                    docker.withRegistry("${imgRegistry}","jenkins-ICIS-TR-docker-pat"){   //credential 이름이 jenkins에 등록된 이름과 동일해야 함, jenkins에 docker deploy 권한 필요
                         sh "skaffold build -p dev -t ${TAG}"
                     }
                     // mac local 일때만 사용 linux 환경에서는 docker.withRegistry 사용
@@ -35,7 +35,7 @@ pipeline {
         stage('GitOps update') {
             steps{
                 print "======kustomization.yaml tag update====="
-                git url: "https://${gitOpsUrl}", branch: "main" , credentialsId: "git-credential"
+                git url: "https://${gitOpsUrl}", branch: "main" , credentialsId: "jenkins-ICIS-TR-github-pat"
                 script{
                     sh """
                         cd ./simple-api/blue-green
